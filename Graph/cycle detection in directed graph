@@ -1,0 +1,67 @@
+//{ Driver Code Starts
+#include <bits/stdc++.h>
+using namespace std;
+
+// } Driver Code Ends
+class Solution {
+  public:
+    // Function to detect cycle in a directed graph.
+    bool ispresent(vector<int> adj[],vector<int> &ans,unordered_map<int,bool> &visited,unordered_map<int,bool> &back_call,int node){
+        visited[node]=true;
+        back_call[node]=true;
+        for (auto neig:adj[node]){
+            if (!visited[neig]){
+                bool return_call=ispresent(adj,ans,visited,back_call,neig);
+                if (return_call){
+                    return true;
+                }
+            }
+            else if(back_call[neig]==true){
+                return true;
+            }
+        }
+        back_call[node]=false;
+        return false;
+    }
+    bool isCyclic(int V, vector<int> adj[]) {
+        unordered_map<int,bool> visited;
+        unordered_map<int,bool> back_call;
+        vector<int> ans;
+        for (int i=0;i<V;i++){
+            if (!visited[i]){
+                bool ok= ispresent(adj,ans,visited,back_call,i);
+                if (ok){
+                    return true; 
+                }
+            }
+        }
+        return false;
+    }
+};
+
+//{ Driver Code Starts.
+
+int main() {
+
+    int t;
+    cin >> t;
+    while (t--) {
+        int V, E;
+        cin >> V >> E;
+
+        vector<int> adj[V];
+
+        for (int i = 0; i < E; i++) {
+            int u, v;
+            cin >> u >> v;
+            adj[u].push_back(v);
+        }
+
+        Solution obj;
+        cout << obj.isCyclic(V, adj) << "\n";
+    }
+
+    return 0;
+}
+
+// } Driver Code Ends
