@@ -6,6 +6,9 @@ using namespace std;
 class Solution {
   public:
     // Function to detect cycle in an undirected graph.
+    
+    
+    Using bfs
     bool isCycle(vector<int> adj[],unordered_map<int,bool> &visited,int src){
         unordered_map<int ,int> parent;
         queue<int> q;
@@ -39,6 +42,35 @@ class Solution {
                 bool ok= isCycle(adj,visited,i);
                 if (ok==true){
                     return 1;
+                }
+            }
+        }
+        return false;
+    }
+    
+    
+    
+    using dfs
+    bool dfs(vector<bool> &visited,vector<int> adj[],int src,int parent){
+        visited[src]=true;
+        for (auto x:adj[src]){
+            if (visited[x]!=true){
+                if (dfs(visited,adj,x,src)==true){
+                    return true;
+                }
+            }
+            else if (x!=parent){
+                return true;
+            }
+        }
+        return false;
+    }
+    bool isCycle(int V, vector<int> adj[]) {
+        vector<bool> visited(V,false);
+        for (int i=0;i<V;i++){
+            if (visited[i]!=true){
+                if (dfs(visited,adj,i,-1)==true){
+                    return true;
                 }
             }
         }
