@@ -6,32 +6,29 @@ using namespace std;
 class Solution {
   public:
     // Function to detect cycle in a directed graph.
-    bool ispresent(vector<int> adj[],vector<int> &ans,unordered_map<int,bool> &visited,unordered_map<int,bool> &back_call,int node){
-        visited[node]=true;
-        back_call[node]=true;
-        for (auto neig:adj[node]){
-            if (!visited[neig]){
-                bool return_call=ispresent(adj,ans,visited,back_call,neig);
-                if (return_call){
+    bool dfs(vector<int> adj[],vector<bool> &visited,vector<bool> &parent,int src){
+        visited[src]=true;
+        parent[src]=true;
+        for (auto x:adj[src]){
+            if (visited[x]!=true){
+                if (dfs(adj,visited,parent,x)==true){
                     return true;
                 }
             }
-            else if(back_call[neig]==true){
+            else if (parent[x]==true){
                 return true;
             }
         }
-        back_call[node]=false;
+        parent[src]=false;
         return false;
     }
     bool isCyclic(int V, vector<int> adj[]) {
-        unordered_map<int,bool> visited;
-        unordered_map<int,bool> back_call;
-        vector<int> ans;
+        vector<bool> visited(V,false);
+        vector<bool> parent(V,false);
         for (int i=0;i<V;i++){
-            if (!visited[i]){
-                bool ok= ispresent(adj,ans,visited,back_call,i);
-                if (ok){
-                    return true; 
+            if (visited[i]==false){
+                if (dfs(adj,visited,parent,i)==true){
+                    return true;
                 }
             }
         }
