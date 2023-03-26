@@ -1,0 +1,90 @@
+You are given a directed graph of n nodes numbered from 0 to n - 1, where each node has at most one outgoing edge.
+
+The graph is represented with a given 0-indexed array edges of size n, indicating that there is a directed edge from node i to node edges[i]. If there is no outgoing edge from node i, then edges[i] == -1.
+
+Return the length of the longest cycle in the graph. If no cycle exists, return -1.
+
+A cycle is a path that starts and ends at the same node.
+
+ 
+
+Example 1:
+
+
+Input: edges = [3,3,4,2,3]
+Output: 3
+Explanation: The longest cycle in the graph is the cycle: 2 -> 4 -> 3 -> 2.
+The length of this cycle is 3, so 3 is returned.
+Example 2:
+
+
+Input: edges = [2,-1,3,1]
+Output: -1
+Explanation: There are no cycles in this graph.
+
+
+In this solution we will first use Kahn's algorithm to remove those nodes, who will potentially not be in a cycle.
+
+Use a visited array to mark visited nodes.
+Add nodes in queue having indegree 0.
+At the end nodes having indegree as 1 will only be unvisited as they can be the part of the longest cycle in graph.
+-->From the second image we can see that node 2,3,4 are unvisited and have indegree as 1, rest have 0 indegree and are visited. Potentially from 2,3,4 nodes only we will get the longest cycle. Not necessarily, all the nodes with indegree 1, will contribute in one big cycle. We will have to calculate the longest cycle, but we are sure here that the longest cycle will contain nodes left with only indegree 1.
+
+Next intialize our answer with -1 (Will be -1 if no cycle is present).
+The next pass will be to calculate the longest cycle among the potential nodes.
+
+Iterate through all the nodes and perform a traversal to find cycle length if the current node is unvisited.
+Store the current node in a variable, in our case "start".
+Intialise a variable with the adjacent node of our current node, in our case "curr".
+We will loop through, increasing the length of the path, until we reach back to start, that means we have found a cycle.
+Then simply update our answer, if the length of the cycle we just found is greater.
+
+
+class Solution {
+public:
+    int longestCycle(vector<int>& edges) {
+        int n=edges.size();
+        vector<int> visited(n,0);
+        vector<int> indegree(n,0);
+        for (int i=0;i<n;i++){
+            if (edges[i]!=-1){
+                indegree[edges[i]]++;
+            }
+        }
+        queue<int> q;
+        for (int i=0;i<n;i++){
+            if (indegree[i]==0){
+                q.push(i);
+            }
+        }
+        //if anynode is marked as visited then it will not be a part of cycle as stated in kanhs algorithm
+        while (!q.empty()){
+            auto temp=q.front();
+            q.pop();
+            visited[temp]=1;
+            if (edges[temp]!=-1){
+                indegree[edges[temp]]--;
+                if (indegree[edges[temp]]==0){
+                    q.push(edges[temp]);
+                }
+            }
+        }
+        int ans=-1;
+        for (int i=0;i<n;i++){
+            if (!visited[i]){
+                int start=i;
+                int next=edges[i];
+                visited[i]==1;
+                int curr=1;
+                //check till next return back to start
+                while (next!=start){
+                    next=edges[next];
+                    visited[next]=1;
+                    curr++;
+                }
+                ans=max(ans,curr);
+            }
+        }
+        return ans;
+    }
+};
