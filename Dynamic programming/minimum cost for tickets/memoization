@@ -1,0 +1,22 @@
+class Solution {
+public:
+int t[366];
+int helper(vector<int> &days,vector<int> &costs,int start){
+    int n=days.size();
+    if (start>=n) return 0;
+    if (t[start]!=-1){
+        return t[start];
+    }
+    int day=costs[0]+helper(days,costs,start+1);
+    int i;
+    for (i=start;i<n and days[i]<days[start]+7;i++);
+    int week=costs[1]+helper(days,costs,i);
+    for (i=start;i<n and days[i]<days[start]+30;i++);
+    int month=costs[2]+helper(days,costs,i);
+    return t[start]=min({day,week,month});
+}
+    int mincostTickets(vector<int>& days, vector<int>& costs) {
+        memset(t,-1,sizeof(t));
+        return helper(days,costs,0);
+    }
+};
