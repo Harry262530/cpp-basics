@@ -1,0 +1,94 @@
+Given a 2D grid consists of 0s (land) and 1s (water).  An island is a maximal 4-directionally connected group of 0s and a closed island is an island totally (all left, top, right, bottom) surrounded by 1s.
+
+Return the number of closed islands.
+
+ 
+
+Example 1:
+
+
+
+Input: grid = [[1,1,1,1,1,1,1,0],[1,0,0,0,0,1,1,0],[1,0,1,0,1,1,1,0],[1,0,0,0,0,1,0,1],[1,1,1,1,1,1,1,0]]
+Output: 2
+Explanation: 
+Islands in gray are closed because they are completely surrounded by water (group of 1s).
+Example 2:
+
+
+
+Input: grid = [[0,0,1,0,0],[0,1,0,1,0],[0,1,1,1,0]]
+Output: 1
+Example 3:
+
+Input: grid = [[1,1,1,1,1,1,1],
+               [1,0,0,0,0,0,1],
+               [1,0,1,1,1,0,1],
+               [1,0,1,0,1,0,1],
+               [1,0,1,1,1,0,1],
+               [1,0,0,0,0,0,1],
+               [1,1,1,1,1,1,1]]
+Output: 2
+
+
+first take visited array and mark all boundary zeros visited and store them in queue
+then using bfs traverse its adjacent zeroes using queue like we did in number of enclaves
+
+then search for every zero that is not visited and using bfs traverse its all possible adjacent and then make a counter to count all bds calls
+
+class Solution {
+public:
+    void dfs(vector<vector<int>> &visited,vector<vector<int>>& grid,int row,int col,int rowrange[],int colrange[]){
+        visited[row][col]=1;
+        int n=grid.size();
+        int m=grid[0].size();
+        for (int i=0;i<4;i++){
+            int nrow=row+rowrange[i];
+            int ncol=col+colrange[i];
+            if (nrow>=0 && nrow<n && ncol>=0 && ncol<m && !visited[nrow][ncol] && grid[nrow][ncol]==0){
+                dfs(visited,grid,nrow,ncol,rowrange,colrange);
+            }
+        }
+    }
+    int closedIsland(vector<vector<int>>& grid) {
+        int n=grid.size();
+        int m=grid[0].size();
+        vector<vector<int>> visited(n,vector<int>(m,0));
+        queue<pair<int,int>> q;
+        int rowrange[]={0,-1,0,1};
+        int colrange[]={-1,0,1,0};
+        for (int i=0;i<n;i++){
+            for (int j=0;j<m;j++){
+                if (i==0 || i==n-1 || j==0 || j==m-1){
+                    if (grid[i][j]==0){
+                        visited[i][j]=1;
+                        q.push({i,j});
+                    }
+                }
+            }
+        }
+        while (!q.empty()){
+            auto temp=q.front();
+            q.pop();
+            int r=temp.first;
+            int c=temp.second;
+            for (int i=0;i<4;i++){
+                int nrow=r+rowrange[i];
+                int ncol=c+colrange[i];
+                if (nrow>=0 && nrow<n && ncol>=0 && ncol<m && !visited[nrow][ncol] && grid[nrow][ncol]==0){
+                    visited[nrow][ncol]=1;
+                    q.push({nrow,ncol});
+                }
+            }
+        }
+        int count=0;
+        for (int i=0;i<n;i++){
+            for (int j=0;j<m;j++){
+                if (!visited[i][j] && grid[i][j]==0){
+                    dfs(visited,grid,i,j,rowrange,colrange);
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+};
