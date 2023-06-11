@@ -1,0 +1,57 @@
+You are given a weighted undirected graph having n+1 vertices numbered from 0 to n and m edges describing there are edges between a to b with some weight, find the shortest path between the vertex 1 and the vertex n and if path does not exist then return a list consisting of only -1.
+
+Example:
+Input:
+n = 5, m= 6
+edges = [[1,2,2], [2,5,5], [2,3,4], [1,4,1],[4,3,3],[3,5,1]]
+Output:
+1 4 3 5
+Explaination:
+Shortest path from 1 to n is by the path 1 4 3 5
+
+first find the shortest path using dikstra algo and with it create a temperory buffer/cache to store the parent
+after applying dikstra take the last node and the iterate through its parent until it reaches its last node and it can be checked if the parent and node are same
+push it into an array
+
+public:
+    vector<int> shortestPath(int n, int m, vector<vector<int>>& edges) {
+        vector<pair<int,int>> adj[n+1];
+        for (auto x:edges){
+            adj[x[0]].push_back({x[1],x[2]});
+            adj[x[1]].push_back({x[0],x[2]});
+        }
+        priority_queue<pair<int,int>,vector<pair<int,int>>,greater<pair<int,int>>> pq;
+        pq.push({0,1});
+        vector<int> dist(n+1,1e9),parent(n+1);
+        for (int i=1;i<n+1;i++){
+            parent[i]=i;
+        }
+        dist[1]=0;
+        while (!pq.empty()){
+            auto temp=pq.top();
+            int dis=temp.first;
+            int node=temp.second;
+            pq.pop();
+            for (auto next:adj[node]){
+                int weight=next.second;
+                int neig=next.first;
+                if (weight+dis<dist[neig]){
+                    dist[neig]=weight+dis;
+                    pq.push({dist[neig],neig});
+                    parent[neig]=node;
+                }
+            }
+        }
+        if (dist[n]==1e9){
+            return {-1};
+        }
+        vector<int> path;
+        int node=n;
+        while (parent[node]!=node){
+            path.push_back(node);
+            node=parent[node];
+        }
+        path.push_back(1);
+        reverse(path.begin(),path.end());
+        return path;
+    }
